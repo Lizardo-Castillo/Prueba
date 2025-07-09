@@ -4,6 +4,9 @@
 #include "nodo.h"
 #include <vector>
 
+#include "utilidades.h"
+
+
 class Grafo {
 public:
     std::vector<Nodo> nodos;

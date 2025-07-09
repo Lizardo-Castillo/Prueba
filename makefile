@@ -6,7 +6,7 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall
 
 # Archivos fuente y headers
-SRC = src/main.cpp src/nodo.cpp src/grafo.cpp src/dijkstra.cpp
+SRC = src/main.cpp src/nodo.cpp src/grafo.cpp src/dijkstra.cpp src/utilidades.cpp
 INC = -Iinclude
 
 # Regla por defecto

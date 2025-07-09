@@ -34,23 +34,40 @@ void Grafo::conectarTriangulacion() {
             }
         }
 
-        // Ordenar por distancia
         std::sort(distancias.begin(), distancias.end());
 
         int conexiones = 0;
         for (auto& [d, vecino_id] : distancias) {
             if (conexiones >= 3) break;
 
-            // Verificar si ya está conectado
-            auto& vecinos = nodo.vecinos;
-            bool yaConectado = std::any_of(vecinos.begin(), vecinos.end(), [&](auto& v) {
-                return v.first == vecino_id;
-            });
+            // Evitar duplicado
+            bool yaConectado = std::any_of(nodo.vecinos.begin(), nodo.vecinos.end(),
+                                           [&](auto& v) { return v.first == vecino_id; });
+            if (yaConectado) continue;
 
-            if (!yaConectado) {
-                float distancia = nodo.distanciaA(nodos[vecino_id]);
-                nodo.vecinos.emplace_back(vecino_id, distancia);
-                nodos[vecino_id].vecinos.emplace_back(nodo.id, distancia);
+            // Verificar si la nueva conexión se cruza con alguna existente
+            bool seCruza = false;
+            auto a = std::make_pair(nodo.x, nodo.y);
+            auto b = std::make_pair(nodos[vecino_id].x, nodos[vecino_id].y);
+
+            for (auto& otroNodo : nodos) {
+                for (auto& [otroVecino, _] : otroNodo.vecinos) {
+                    if (otroNodo.id < otroVecino) { // evitar doble comparación
+                        auto c = std::make_pair(otroNodo.x, otroNodo.y);
+                        auto d = std::make_pair(nodos[otroVecino].x, nodos[otroVecino].y);
+
+                        if (segmentosSeCruzan(a, b, c, d)) {
+                            seCruza = true;
+                            break;
+                        }
+                    }
+                }
+                if (seCruza) break;
+            }
+
+            if (!seCruza) {
+                nodo.vecinos.emplace_back(vecino_id, d);
+                nodos[vecino_id].vecinos.emplace_back(nodo.id, d);
                 ++conexiones;
             }
         }
